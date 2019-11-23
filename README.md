@@ -1,5 +1,17 @@
 # rpyUpdater
-simpleTool to run scripts located on boot partition on RPi SDCards
+Tool to run scripts located on boot partition on RPi SDCards
+
+usefull when using for minor modifications based on same RPI image 
+
+# Install
+git clone where ever you want ant add to systemctl,
+you can use the template file (modifying it with the path of your install)
+then  copy rpyUpdater.service to `/lib/systemd/system/`
+
+```
+sudo systemctl reload-daemon
+sudo systemctl enable rpyUpdater
+```
 
 
 # Folder structure
@@ -27,23 +39,25 @@ they expect sh or python3 scripts and alternatively a file (case independent)
 # Custom behaviours
 Ech script can start with custom comments to modify its behavior
 a valid comment is a line formatted as following :  
-```#rpy.\<param\>:\<valueAsInteger\> ```
+`#rpy.<param>:<valueAsInteger> `
 
 example:
-   ``` #rpy.timeout:10 ```
+   `#rpy.timeout:10 `
 
 valid config parameters are (case-sensitive)
 
-* timeout ```default:120``` : the time in seconds before scripts is considered hung 
-* internetTimeout ```default:0``` : if positive, will start to ping google before to start the script until connected or specified Time out has been spent
-* scriptGroup ```default:0``` : scripts will be sorted by their groups, for "once" scripts, each new group will trigger a reboot
+* timeout `(default:120)` : the time in seconds before scripts is considered hung 
+* internetTimeout `(default:0)` : if positive, will start to ping google before to start the script until connected or specified Time out has been spent
+* scriptGroup `(default:0)` : scripts will be sorted by their groups, for "once" scripts, each new group will trigger a reboot
 
 
 # BE CAREFULL NOTES
 with great power comes great puberty
 
 * from now, one reboot with a faulty sudo script will suffice to burn your sd image up...
+
 * if a "once" script manually triggers reboot, it'll be executed each time as the system can't now if it succeeded
+
 * if scripts waits for user input it'll hang for ever until timeout and put in quarantine
 
 
