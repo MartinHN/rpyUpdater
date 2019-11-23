@@ -4,7 +4,7 @@
 
  [Service]
  Type=idle
- ExecStart=python3 /boot/rpyUpdater.py
+ ExecStart=python3 /home/pi/Dev/rpyUpdater.py
 
  [Install]
  WantedBy=multi-user.target

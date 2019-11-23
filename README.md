@@ -1,15 +1,15 @@
 # rpyUpdater
-simpleTool to run script from boot partition on RPi
+simpleTool to run scripts located on boot partition on RPi SDCards
 
 
+# Folder structure
 this script expects two directories 
-/boot/customConfig/once
-/boot/customConfig/each
-
-
+```
+/boot/customConfig/
+                  once/
+                  each/
+```
 once are for script executed once only and ... each at each boot ...
-
-they expect sh or python3 scripts and alternatively a file named HOSTNAME to change hostName of pi
 
 each directory will populate with :
 * logs/ => stdout and stderr of scripts
@@ -17,11 +17,42 @@ each directory will populate with :
 * quarantine/ => scripts are copied here when UNsuccessful , see logs/
 
 
+# Scripts
+they expect sh or python3 scripts and alternatively a file (case independent)
 
-an example of service to use with systemd, it expects the script to be placed on boot too but you can change it freely
+ named HOSTNAME to change hostName of pi
+ named UPDATEME to try to pull last version of this tool using git
 
 
-Noteson OSX hostname change is simulated in /tmp
+# Custom behaviours
+Ech script can start with custom comments to modify its behavior
+a valid comment is a line formatted as following :  
+```#rpy.\<param\>:\<valueAsInteger\> ```
+
+example:
+   ``` #rpy.timeout:10 ```
+
+valid config parameters are (case-sensitive)
+
+* timeout ```default:120``` : the time in seconds before scripts is considered hung 
+* internetTimeout ```default:0``` : if positive, will start to ping google before to start the script until connected or specified Time out has been spent
+* scriptGroup ```default:0``` : scripts will be sorted by their groups, for "once" scripts, each new group will trigger a reboot
+
+
+# BE CAREFULL NOTES
+with great power comes great puberty
+
+* from now, one reboot with a faulty sudo script will suffice to burn your sd image up...
+* if a "once" script manually triggers reboot, it'll be executed each time as the system can't now if it succeeded
+* if scripts waits for user input it'll hang for ever until timeout and put in quarantine
+
+
+
+# Notes
+* an example of service to use with systemd
+
+* on OSX hostname change is simulated in /tmp
+
 
 
 
