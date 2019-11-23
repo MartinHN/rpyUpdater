@@ -9,7 +9,7 @@ you can use the template file (modifying it with the path of your install)
 then  copy rpyUpdater.service to `/lib/systemd/system/`
 
 ```
-sudo systemctl reload-daemon
+sudo systemctl daemon-reload
 sudo systemctl enable rpyUpdater
 ```
 
