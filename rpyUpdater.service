@@ -1,0 +1,10 @@
+ [Unit]
+ Description=rpyUpdater
+ After=multi-user.target
+
+ [Service]
+ Type=idle
+ ExecStart=python3 /boot/rpyUpdater.py
+
+ [Install]
+ WantedBy=multi-user.target

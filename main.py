@@ -45,6 +45,8 @@ class ChangeHostNameAction(Action):
     return sedCMD+self.etcDir+"/hosts && "+sedCMD+self.etcDir+"/hostname;"
 
 
+
+
 def buildActionFromFile(f):
   fileName = os.path.basename(f)
   if(os.path.basename(f).lower()=="hostname"):
@@ -74,17 +76,20 @@ def createBaseStructure(folderToWatch):
       os.makedirs(directory)
   return directories
 
-def parseNRun(folderToWatch,isOnce):
+def parseNRun(folderToWatch,isOnce): # return true if at least on action succeed
   actions = []
   if os.path.exists(folderToWatch):
     specialDirs = createBaseStructure(folderToWatch)
     actions = buildActionList(os.path.join(folderToWatch))
 
+  numActionsSuccess =0
   if len(actions):
     for a in actions:
-      processActionResult(a.doAction(),a,specialDirs,isOnce)
+      if(processActionResult(a.doAction(),a,specialDirs,isOnce)):
+        numActionsSuccess +=1
   else:
     print("nothing to do at ",folderToWatch)
+  return (len(actions)>0) and numActionsSuccess>0
     
 def writeOrRemove(filePath,data):
   if(data):
@@ -109,6 +114,7 @@ def processActionResult(res,a,specialDirs,isOnce):
 
   writeOrRemove(logFile+".err",res.stderr)
   writeOrRemove(logFile+".log",res.stdout)
+  return res.returncode==0
 
 
 
@@ -116,9 +122,15 @@ def processActionResult(res,a,specialDirs,isOnce):
 if __name__=="__main__":
   folderToWatch = "/boot/customConfig"
   folderToWatch = "/tmp/customConfig"
-  parseNRun(folderToWatch+"/once",True)
-  parseNRun(folderToWatch+"/each",False)
+  if(parseNRun(folderToWatch+"/once",True)):
+    rebootCmd = "sudo reboot"
+    if  not isOSX:
+      subprocess.run(rebootCmd,shell=True)
+    else:
+      print (rebootCmd)
 
+  parseNRun(folderToWatch+"/each",False)
+  exit(0)
 
 
 
